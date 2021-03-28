@@ -29,10 +29,12 @@ module.exports = app => {
             const professorFromDB = await app.db('professor')
                 .where({ id: id_professor }).first()
             const subjectFromDB = await app.db('subject').where({ id: id_subject }).first()
-    
+            console.log(subjectFromDB.deleted_at != null)
+            console.log(professorFromDB.deleted_at != null)
             if (subjectFromDB.deleted_at != null || professorFromDB.deleted_at != null) {
-                throw "Dados inválidos, por favor selecione professor e disciplina válidos"
-                //return res.status(400).send({ msg: "Dados inválidos, por favor selecione professor e disciplina válidos", error: true })
+                console.log("Oláaaa")
+                //throw "Dados inválidos, por favor selecione professor e disciplina válidos"
+                res.status(400).send({ msg: "Dados inválidos, por favor selecione professor e disciplina válidos", error: true })
             }
         }
         catch(err) {
@@ -45,12 +47,20 @@ module.exports = app => {
         try {
             existsOrError(lecture.id_subject, "Disciplina da turma não foi atribuida")
             existsOrError(lecture.id_professor, "Professor não foi atribuído à turma")
-            validateData(lecture.id_professor, lecture.id_subject)
+
+            const professorFromDB = await app.db('professor')
+                .where({ id: lecture.id_professor }).first()
+            const subjectFromDB = await app.db('subject').where({ id: lecture.id_subject }).first()
+            console.log(subjectFromDB.deleted_at != null)
+            console.log(professorFromDB.deleted_at != null)
+            if (subjectFromDB.deleted_at != null || professorFromDB.deleted_at != null) {
+                throw "Dados inválidos, por favor selecione professor e disciplina válidos"
+            }
 
             const lectureSaved = await app.db('class')
                 .insert({ id_subject: lecture.id_subject, id_professor: lecture.id_professor, period: lecture.period, id_room: lecture.id_room, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
             res.status(201).json({ msg: 'Aula gravado com sucesso!', lectureSaved })
-        }
+        } 
         catch (err) {
             res.status(400).json({ msg: err, error: true })
         }
