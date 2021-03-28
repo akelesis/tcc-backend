@@ -24,24 +24,6 @@ module.exports = app => {
         }
     }
 
-    const validateData = async (id_professor, id_subject) => {
-        try {
-            const professorFromDB = await app.db('professor')
-                .where({ id: id_professor }).first()
-            const subjectFromDB = await app.db('subject').where({ id: id_subject }).first()
-            console.log(subjectFromDB.deleted_at != null)
-            console.log(professorFromDB.deleted_at != null)
-            if (subjectFromDB.deleted_at != null || professorFromDB.deleted_at != null) {
-                console.log("Oláaaa")
-                //throw "Dados inválidos, por favor selecione professor e disciplina válidos"
-                res.status(400).send({ msg: "Dados inválidos, por favor selecione professor e disciplina válidos", error: true })
-            }
-        }
-        catch(err) {
-            return
-        }
-    }
-
     const post = async (req, res) => {
         const lecture = req.body
         try {
@@ -51,8 +33,7 @@ module.exports = app => {
             const professorFromDB = await app.db('professor')
                 .where({ id: lecture.id_professor }).first()
             const subjectFromDB = await app.db('subject').where({ id: lecture.id_subject }).first()
-            console.log(subjectFromDB.deleted_at != null)
-            console.log(professorFromDB.deleted_at != null)
+
             if (subjectFromDB.deleted_at != null || professorFromDB.deleted_at != null) {
                 throw "Dados inválidos, por favor selecione professor e disciplina válidos"
             }
