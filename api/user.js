@@ -1,0 +1,98 @@
+const bcrypt = require('bcrypt')
+
+module.exports = app => {
+    const {existsOrError, notExistsOrError} = app.api.validator
+    const get = async (req, res) => {
+        try{
+            const users = await app.db("user").select("*")
+            res.status(200).send([...users])
+        }
+        catch(err) {
+            res.status(500).send({msg: "Não foi possível recuperar os dados!", error: true})
+        }
+    }
+
+    const getById = async (req, res) => {
+        const userId = req.params.id
+        try {
+            const user = await app.db('user').where({ id: userId }).first()
+
+            res.status(200).send(user)
+        }
+        catch (err) {
+            res.status(500).send({ msg: err, error: true })
+        }
+    }
+
+    const encryptPassword = password => {
+        const salt = bcrypt.genSaltSync(10)
+        return bcrypt.hashSync(password, salt)
+    }
+
+    const post = async (req, res) => {
+        let {name, email, password} = req.body
+        try {
+            existsOrError(name, 'Nome não informado')
+            existsOrError(email, 'Email não informado')
+            existsOrError(password, 'Senha não informada')
+
+            const userDB = await app.db("user")
+                .where({ email })
+                .first()
+
+            notExistsOrError(userDB, 'Email já cadastrado')
+
+            password = encryptPassword(password)
+
+            await app.db('user').insert({name, email, password, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
+
+            res.status(201).json({msg: "Criado com sucesso!"})
+            
+        }
+        catch(err) {
+            console.log(err)
+            res.status(400).json({msg: err, error: true})
+        }
+
+
+    }
+    
+    const put = async (req, res) => {
+        const user = req.body
+        const user_id = req.params.id
+        let validInfo = false
+        try {
+            existsOrError(user_id, "usuário não existe")
+            existsOrError(user.name, "nome indefinido")
+            existsOrError(user.email, "email indefinido")
+            validInfo = true
+            const updatedUser = await app.db('user')
+                .update({ name: user.name, email: user.email, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .where({ id: user_id })
+            existsOrError(updatedUser, "Usuário não encontrado")
+            res.status(200).json({msg: "Atualização bem sucedida"})
+        }
+        catch(err) {
+            res.status(400).json({msg: err, error: true})
+        }
+    }
+
+    const remove = async (req, res) => {
+        const user_id = req.params.id
+
+        try {
+            existsOrError(user_id, "Usuário não informado")
+            const removedUser = await app.db('user')
+                .update({deleted_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
+                .where({id: user_id})
+            existsOrError(removedUser, 'Usuário não encontrado!')
+
+            res.status(204).send()
+        }
+        catch(err) {
+            res.status(400).json({msg: err, error: true})
+        }
+    }
+
+    return { get, getById, post, put, remove }
+}
