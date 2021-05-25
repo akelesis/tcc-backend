@@ -29,6 +29,7 @@ module.exports = app => {
         try {
             existsOrError(room.name, "nome indefinido")
             existsOrError(room.capacity, "capacidade não informada")
+            existsOrError(room.terminals_quantity, "numero de terminais não informado")
             existsOrError(room.type, "tipo indefinido")
 
             const roomFromDB = await app.db('room').where({ name: room.name }).first()
@@ -51,7 +52,7 @@ module.exports = app => {
 
         try {
             const updatedRoom = await app.db('room')
-                .update({ name: room.name, capacity: room.capacity, type: room.type, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .update({ name: room.name, capacity: room.capacity, type: room.type, terminals_quantity: room.terminals_quantity, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
                 .where({ id: roomId })
 
             res.status(200).json({ msg: 'Sala atualizada com sucesso!', updatedRoom })

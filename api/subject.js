@@ -31,13 +31,14 @@ module.exports = app => {
             existsOrError(subject.semester, "semestre não informado")
             existsOrError(subject.workload, "carga horária indefinida")
             existsOrError(subject.credits, "quantidade de créditos indefinida")
+            existsOrError(subject.subject_code, "código da disciplina não informado")
 
             const subjectFromDB = await app.db('subject').where({ name: subject.name }).first()
 
             notExistsOrError(subjectFromDB, "Disciplina já foi cadastrada anteriormente!")
 
             const subjectSaved = await app.db('subject')
-                .insert({ name: subject.name, semester: subject.semester, workload: subject.workload, credits: subject.credits, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .insert({ name: subject.name, semester: subject.semester, workload: subject.workload, credits: subject.credits, subject_code: subject.subject_code, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
 
             res.status(201).json({ msg: 'Disciplina gravada com sucesso!', subjectSaved })
         }

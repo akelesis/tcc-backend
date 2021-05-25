@@ -4,7 +4,8 @@ module.exports = {
   client: 'mysql2',
   connection: {
     database: 'cronos',
-    user: 'root'
+    user: 'root',
+    password: '123456'
   },
   pool: {
     min: 2,

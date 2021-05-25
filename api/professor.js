@@ -35,7 +35,7 @@ module.exports = app => {
             notExistsOrError(professorFromDB, "Professor já foi cadastrado anteriormente!")
 
             const professorSaved = await app.db('professor')
-                .insert({ name: professor.name, department: professor.department, workload: professor.workload, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .insert({ name: professor.name, department: professor.department, email: professor.email, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
 
             res.status(201).json({ msg: 'Professor gravado com sucesso!', professorSaved })
         }
@@ -52,7 +52,7 @@ module.exports = app => {
 
         try {
             const updatedProfessor = await app.db('professor')
-                .update({ name: professor.name, department: professor.department, workload: professor.workload, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .update({ name: professor.name, department: professor.department, email: professor.email, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
                 .where({ id: professorId })
 
             res.status(200).json({ msg: 'Professor atualizado com sucesso!', updatedProfessor })
