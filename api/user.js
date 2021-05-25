@@ -15,12 +15,12 @@ module.exports = app => {
     const getById = async (req, res) => {
         const userId = req.params.id
         try {
-            const user = await app.db('user').where({ id: userId }).first()
-
+            const user = await app.db('user').where({ user_id: userId }).first()
+            existsOrError(user, "O usuário não foi encontrado!")
             res.status(200).send(user)
         }
         catch (err) {
-            res.status(500).send({ msg: err, error: true })
+            res.status(400).send({ msg: err, error: true })
         }
     }
 
@@ -44,13 +44,12 @@ module.exports = app => {
 
             password = encryptPassword(password)
 
-            await app.db('user').insert({name, email, password, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
+            const savedUser = await app.db('user').insert({name, email, password, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
 
-            res.status(201).json({msg: "Criado com sucesso!"})
+            res.status(201).json({msg: "Criado com sucesso!", savedUser: savedUser[0]})
             
         }
         catch(err) {
-            console.log(err)
             res.status(400).json({msg: err, error: true})
         }
 
@@ -68,9 +67,9 @@ module.exports = app => {
             validInfo = true
             const updatedUser = await app.db('user')
                 .update({ name: user.name, email: user.email, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
-                .where({ id: user_id })
+                .where({ user_id })
             existsOrError(updatedUser, "Usuário não encontrado")
-            res.status(200).json({msg: "Atualização bem sucedida"})
+            res.status(200).json({msg: "Atualização bem sucedida", updatedUser: user_id})
         }
         catch(err) {
             res.status(400).json({msg: err, error: true})
@@ -84,7 +83,7 @@ module.exports = app => {
             existsOrError(user_id, "Usuário não informado")
             const removedUser = await app.db('user')
                 .update({deleted_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
-                .where({id: user_id})
+                .where({user_id})
             existsOrError(removedUser, 'Usuário não encontrado!')
 
             res.status(204).send()

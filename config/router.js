@@ -39,12 +39,12 @@ module.exports = (app) => {
         .put(app.api.subject.put)
         .delete(app.api.subject.remove)
 
-    app.route('/lectures')
-        .get(app.api.lecture.get)
-        .post(app.api.lecture.post)
+    app.route('/classes')
+        .get(app.api.classes.get)
+        .post(app.api.classes.post)
 
-    app.route('/lectures/:id')
-        .get(app.api.lecture.getById)
-        .put(app.api.lecture.put)
-        .delete(app.api.lecture.remove)
+    app.route('/classes/:id')
+        .get(app.api.classes.getById)
+        .put(app.api.classes.put)
+        .delete(app.api.classes.remove)
 }
