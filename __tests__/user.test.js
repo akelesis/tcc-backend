@@ -10,7 +10,7 @@ describe("GET /users", () => {
         const response = await request(app).get("/users");
         expect(response.body).toBeInstanceOf(Array)
         expect(response.statusCode).toBe(200)
-    });
+    })
 })
 
 describe("GET /users/:id", () => {
@@ -44,6 +44,18 @@ describe("POST /users", () => {
         expect(response.body).toHaveProperty("savedUser")
         expect(response.statusCode).toBe(201)
     })
+
+    test('it should return an object with msg and error properties', async () => {
+        const mockUser = {
+            name: "Test User",
+            password: "123456"
+        }
+        const response = await request(app).post('/users').send(mockUser)
+        expect(response.body).toBeInstanceOf(Object)
+        expect(response.body).toHaveProperty("error")
+        expect(response.body).toHaveProperty("msg")
+        expect(response.statusCode).toBe(400)
+    })
 })
 
 describe("PUT /users/:user_id", () => {
@@ -58,6 +70,18 @@ describe("PUT /users/:user_id", () => {
         expect(response.body).toHaveProperty("updatedUser")
         expect(response.statusCode).toBe(200)
     })
+
+    test('it should return an object with msg and error properties', async () => {
+        const mockUser = {
+            name: "Test User",
+            password: "123456"
+        }
+        const response = await request(app).put('/users/3').send(mockUser)
+        expect(response.body).toBeInstanceOf(Object)
+        expect(response.body).toHaveProperty("error")
+        expect(response.body).toHaveProperty("msg")
+        expect(response.statusCode).toBe(400)
+    })
 })
 
 describe("DELETE /users/:id", () => {
@@ -68,6 +92,13 @@ describe("DELETE /users/:id", () => {
         expect(responseDelete.statusCode).toBe(204)
         const responseDeleted = await request(app).get(`/users/${lastUser.user_id}`)
         expect(responseDeleted.body.deleted_at).not.toBeNull()
+    })
+
+    test("it should return status 400 and an object with msg and error properties", async () => {
+        const response = await request(app).delete(`/users/xx`)
+        expect(response.body).toHaveProperty("error")
+        expect(response.body).toHaveProperty("msg")
+        expect(response.statusCode).toBe(400)
     })
 })
 
