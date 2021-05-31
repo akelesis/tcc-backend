@@ -17,8 +17,6 @@ consign()
     .then("./config/router.js")
     .into(app)
 
-app.listen(PORT, () => {
+module.exports = app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`)
 })
-
-module.exports = app

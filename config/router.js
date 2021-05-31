@@ -47,4 +47,19 @@ module.exports = (app) => {
         .get(app.api.classes.getById)
         .put(app.api.classes.put)
         .delete(app.api.classes.remove)
+
+    app.route('/professor_classes')
+        .post(app.api.professor_class.post)
+        .put(app.api.professor_class.put)
+
+    app.route('/professor_classes/:id')
+        .get(app.api.professor_class.getClassByProfessor)
+
+    app.route('/schedule_classes')
+        .get(app.api.time_room.get)
+        .post(app.api.time_room.post)
+
+    app.route('/schedule_classes/:id')
+        .put(app.api.time_room.put)
+        .delete(app.api.time_room.remove)
 }

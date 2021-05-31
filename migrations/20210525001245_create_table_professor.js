@@ -2,6 +2,7 @@
 exports.up = function(knex) {
   return knex.schema.createTable("professor", table => {
       table.increments("professor_id").primary()
+      table.string("name").notNull()
       table.string("department").notNull()
       table.string("email").notNull()
       table.datetime("created_at").notNull()

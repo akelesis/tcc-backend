@@ -7,6 +7,9 @@ exports.up = function(knex) {
         table.integer("workload").notNull()
         table.integer("credits").notNull()
         table.string("subject_code").notNull()
+        table.dateTime("created_at").notNull()
+        table.dateTime("updated_at")
+        table.dateTime("deleted_at")
 
     })
 };

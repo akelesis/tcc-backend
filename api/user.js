@@ -1,14 +1,15 @@
 const bcrypt = require('bcrypt')
 
 module.exports = app => {
-    const {existsOrError, notExistsOrError} = app.api.validator
+    const { existsOrError, notExistsOrError } = app.api.validator
     const get = async (req, res) => {
-        try{
+        try {
             const users = await app.db("user").select("*")
             res.status(200).send([...users])
         }
-        catch(err) {
-            res.status(500).send({msg: "Não foi possível recuperar os dados!", error: true})
+        catch (err) /* istanbul ignore next */ {
+            
+            res.status(500).send({ msg: "Não foi possível recuperar os dados!", error: true })
         }
     }
 
@@ -30,7 +31,7 @@ module.exports = app => {
     }
 
     const post = async (req, res) => {
-        let {name, email, password} = req.body
+        let { name, email, password } = req.body
         try {
             existsOrError(name, 'Nome não informado')
             existsOrError(email, 'Email não informado')
@@ -44,18 +45,18 @@ module.exports = app => {
 
             password = encryptPassword(password)
 
-            const savedUser = await app.db('user').insert({name, email, password, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
+            const savedUser = await app.db('user').insert({ name, email, password, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
 
-            res.status(201).json({msg: "Criado com sucesso!", savedUser: savedUser[0]})
-            
+            res.status(201).json({ msg: "Criado com sucesso!", savedUser: savedUser })
+
         }
-        catch(err) {
-            res.status(400).json({msg: err, error: true})
+        catch (err) {
+            res.status(400).json({ msg: err, error: true })
         }
 
 
     }
-    
+
     const put = async (req, res) => {
         const user = req.body
         const user_id = req.params.id
@@ -69,10 +70,10 @@ module.exports = app => {
                 .update({ name: user.name, email: user.email, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
                 .where({ user_id })
             existsOrError(updatedUser, "Usuário não encontrado")
-            res.status(200).json({msg: "Atualização bem sucedida", updatedUser: user_id})
+            res.status(200).json({ msg: "Atualização bem sucedida", updatedUser: user_id })
         }
-        catch(err) {
-            res.status(400).json({msg: err, error: true})
+        catch (err) {
+            res.status(400).json({ msg: err, error: true })
         }
     }
 
@@ -82,14 +83,14 @@ module.exports = app => {
         try {
             existsOrError(user_id, "Usuário não informado")
             const removedUser = await app.db('user')
-                .update({deleted_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
-                .where({user_id})
+                .update({ deleted_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .where({ user_id })
             existsOrError(removedUser, 'Usuário não encontrado!')
 
             res.status(204).send()
         }
-        catch(err) {
-            res.status(400).json({msg: err, error: true})
+        catch (err) {
+            res.status(400).json({ msg: err, error: true })
         }
     }
 

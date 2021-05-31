@@ -37,7 +37,7 @@ module.exports = app => {
             notExistsOrError(roomFromDB, "Sala já foi cadastrada anteriormente!")
 
             const roomSaved = await app.db('room')
-                .insert({ name: room.name, capacity: room.capacity, type: room.type, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .insert({ name: room.name, capacity: room.capacity, type: room.type, terminals_quantity: room.terminals_quantity, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
 
             res.status(201).json({ msg: 'Sala gravada com sucesso!', roomSaved })
         }

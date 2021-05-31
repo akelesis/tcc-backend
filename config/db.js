@@ -1,5 +1,7 @@
 const config = require("../knexfile");
-const knex = require("knex")(config);
+const env = process.env.NODE_ENV || "production"
+const knex = require("knex")(config[env]);
 
-knex.migrate.latest([config]);
+if(env !== 'test') knex.migrate.latest([config[env]]);
+
 module.exports = knex;

@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "npx jest --detectOpenHandles --forceExit",
+    "test:coverage": "npx jest --detectOpenHandles --forceExit --coverage",
     "start": "nodemon index.js"
   },
   "author": "Marcus Tavares",
   "license": "ISC",
   "dependencies": {
+    "@types/knex": "^0.16.1",
     "bcrypt": "^5.0.1",
     "consign": "^0.1.6",
     "cors": "^2.8.5",
@@ -17,7 +19,8 @@
     "express": "^4.17.1",
     "jwt-simple": "^0.5.6",
     "knex": "^0.95.2",
-    "mysql2": "^2.2.5"
+    "mysql2": "^2.2.5",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
