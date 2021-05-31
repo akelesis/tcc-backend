@@ -7,7 +7,8 @@ module.exports = app => {
             const users = await app.db("user").select("*")
             res.status(200).send([...users])
         }
-        catch (err) /* istanbul ignore next */ {
+        /* istanbul ignore catch */
+        catch (err) {
             
             res.status(500).send({ msg: "Não foi possível recuperar os dados!", error: true })
         }
