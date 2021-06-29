@@ -3,7 +3,7 @@ module.exports = app => {
     const { existsOrError, notExistsOrError } = app.api.validator
     const get = async (req, res) => {
         try {
-            const rooms = await app.db('room')
+            const rooms = await app.db('room').where({deleted_at: null})
 
             res.status(200).send(rooms)
         }
@@ -31,10 +31,11 @@ module.exports = app => {
             existsOrError(room.capacity, "capacidade não informada")
             existsOrError(room.terminals_quantity, "numero de terminais não informado")
             existsOrError(room.type, "tipo indefinido")
-
-            const roomFromDB = await app.db('room').where({ name: room.name }).first()
-
+            
+            const roomFromDB = await app.db('room').where({ name: room.name, deleted_at: null }).first()
+            
             notExistsOrError(roomFromDB, "Sala já foi cadastrada anteriormente!")
+            console.log(room)
 
             const roomSaved = await app.db('room')
                 .insert({ name: room.name, capacity: room.capacity, type: room.type, terminals_quantity: room.terminals_quantity, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
@@ -50,10 +51,12 @@ module.exports = app => {
         const room = req.body
         const roomId = req.params.id
 
+        console.log(room)
+
         try {
             const updatedRoom = await app.db('room')
                 .update({ name: room.name, capacity: room.capacity, type: room.type, terminals_quantity: room.terminals_quantity, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
-                .where({ id: roomId })
+                .where({ room_id: roomId })
 
             res.status(200).json({ msg: 'Sala atualizada com sucesso!', updatedRoom })
         }
@@ -64,11 +67,10 @@ module.exports = app => {
 
     const remove = async (req, res) => {
         const roomId = req.params.id
-
         try {
             const removedRoom = await app.db('room')
                 .update({deleted_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
-                .where({ id: roomId })
+                .where({ room_id: roomId })
 
             existsOrError(removedRoom, 'Sala não encontrada!')
 

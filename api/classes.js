@@ -3,7 +3,10 @@ module.exports = app => {
 
     const get = async (req, res) => {
         try {
-            const allClasses = await app.db('class')
+            const allClasses = await app.db('class').select('class.class_id', 'college_semester', 'subject_name', 'description', 'professor_name')
+                .innerJoin('professor_class', 'class.class_id', 'professor_class.class_id')
+                .innerJoin('professor', 'professor_class.professor_id', 'professor.professor_id')
+                .innerJoin('subject', 'class.subject_id', 'subject.subject_id')
             res.status(200).json(allClasses)
         }
         catch(err) {

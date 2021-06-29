@@ -3,7 +3,7 @@ module.exports = app => {
     const { existsOrError, notExistsOrError } = app.api.validator
     const get = async (req, res) => {
         try {
-            const subjects = await app.db('subject')
+            const subjects = await app.db('subject').where({deleted_at: null})
 
             res.status(200).send(subjects)
         }
@@ -27,18 +27,16 @@ module.exports = app => {
     const post = async (req, res) => {
         const subject = req.body
         try {
-            existsOrError(subject.name, "nome indefinido")
+            existsOrError(subject.subject_name, "nome indefinido")
             existsOrError(subject.semester, "semestre não informado")
             existsOrError(subject.workload, "carga horária indefinida")
             existsOrError(subject.credits, "quantidade de créditos indefinida")
-            existsOrError(subject.subject_code, "código da disciplina não informado")
-
-            const subjectFromDB = await app.db('subject').where({ name: subject.name }).first()
-
+            
+            const subjectFromDB = await app.db('subject').where({ subject_name: subject.subject_name, deleted_at: null }).first()
             notExistsOrError(subjectFromDB, "Disciplina já foi cadastrada anteriormente!")
 
             const subjectSaved = await app.db('subject')
-                .insert({ name: subject.name, semester: subject.semester, workload: subject.workload, credits: subject.credits, subject_code: subject.subject_code, created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .insert({ subject_name: subject.subject_name, semester: subject.semester, workload: subject.workload, credits: subject.credits, subject_code: "Teste", created_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
 
             res.status(201).json({ msg: 'Disciplina gravada com sucesso!', subjectSaved })
         }
@@ -53,8 +51,8 @@ module.exports = app => {
 
         try {
             const updatedSubject = await app.db('subject')
-                .update({ name: subject.name, semester: subject.semester, workload: subject.workload, credits: subject.credits, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
-                .where({ id: subjectId })
+                .update({ subject_name: subject.subject_name, semester: subject.semester, workload: subject.workload, credits: subject.credits, updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ') })
+                .where({ subject_id: subjectId })
 
             res.status(200).json({ msg: 'Disciplina atualizada com sucesso!', updatedSubject })
         }
@@ -69,7 +67,7 @@ module.exports = app => {
         try {
             const removedsubject = await app.db('subject')
                 .update({deleted_at: new Date().toISOString().replace('Z', '').replace('T', ' ')})
-                .where({ id: subjectId })
+                .where({ subject_id: subjectId })
 
             existsOrError(removedsubject, 'Sala não encontrada!')
 
