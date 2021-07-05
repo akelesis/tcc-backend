@@ -7,6 +7,7 @@ module.exports = app => {
                 .innerJoin('professor_class', 'class.class_id', 'professor_class.class_id')
                 .innerJoin('professor', 'professor_class.professor_id', 'professor.professor_id')
                 .innerJoin('subject', 'class.subject_id', 'subject.subject_id')
+                .where({'class.deleted_at': null})
             res.status(200).json(allClasses)
         }
         catch(err) {
@@ -26,9 +27,23 @@ module.exports = app => {
         }
     }
 
+    const getByPeriodandSemester = async (req, res) => {
+        const classPeriod = req.query.period
+        const classSemester = req.query.semester
+
+        try {
+            const classes = await app.db('class').select('class_id', 'college_semester', 'description', 'subject_name', 'semester')
+                .innerJoin('subject', 'class.subject_id', 'subject.subject_id')
+                .where({college_semester: classPeriod, semester: classSemester})
+            res.status(200).json(classes)
+        }
+        catch(err) {
+            console.log(err)
+        }
+    }
+
     const post = async (req, res) => {
         const classData = req.body
-
         try{
             existsOrError(classData.college_semester, "periodo letivo não especificado")
             existsOrError(classData.description, "descrição da disciplina não fornecida")
@@ -58,7 +73,7 @@ module.exports = app => {
                     college_semester: classData.college_semester, 
                     description: classData.description, 
                     subject_id: classData.subject_id,
-                    created_at: new Date().toISOString().replace('Z', '').replace('T', ' ')
+                    updated_at: new Date().toISOString().replace('Z', '').replace('T', ' ')
                 })
                 .where({class_id: classId})
             res.status(200).json(updatedClass)
@@ -70,9 +85,9 @@ module.exports = app => {
 
     const remove = async (req, res) => {
         const classId = req.params.id
-        
+        console.log(classId)
         try {
-            await app.db('class').where({class_id: classId}).del()
+            await app.db('class').update({deleted_at: new Date().toISOString().replace('Z', '').replace('T', ' ')}).where({class_id: classId})
             res.status(204).send()
         }
         catch(err) {
@@ -81,5 +96,5 @@ module.exports = app => {
 
     }
 
-    return {get, getById, post, put, remove}
+    return {get, getById, getByPeriodandSemester, post, put, remove}
 }

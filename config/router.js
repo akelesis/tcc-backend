@@ -48,6 +48,9 @@ module.exports = (app) => {
         .put(app.api.classes.put)
         .delete(app.api.classes.remove)
 
+    app.route('/schedule/classes')
+        .get(app.api.classes.getByPeriodandSemester)
+
     app.route('/professor_classes')
         .post(app.api.professor_class.post)
         .put(app.api.professor_class.put)
@@ -62,4 +65,13 @@ module.exports = (app) => {
     app.route('/schedule_classes/:id')
         .put(app.api.time_room.put)
         .delete(app.api.time_room.remove)
+
+    app.route('/periods')
+        .get(app.api.periods.getPeriods)
+    
+    app.route('/conflicts/professor_and_time')
+        .post(app.api.conflicts.verifyProfessorAndTime)
+
+    app.route('/conflicts/room_and_time')
+        .post(app.api.conflicts.verifyRoomAndTime)
 }

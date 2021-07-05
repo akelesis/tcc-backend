@@ -3,6 +3,7 @@ module.exports = app => {
 
     const post = async (req, res) => {
         const professorClass = req.body
+        console.log(professorClass)
         try {
             existsOrError(professorClass.professor_id, "professor indefinido")
             existsOrError(professorClass.class_id, "departamento não informado")
